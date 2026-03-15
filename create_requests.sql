@@ -131,7 +131,7 @@ BEGIN
     END;
     $$;
 
-    CREATE OR REPLACE PROCEDURE reassign_staff_tasks(
+    CREATE OR REPLACE PROCEDURE reassign_tasks(
         p_oldLogin VARCHAR(50),
         p_newLogin VARCHAR(50)
     )
