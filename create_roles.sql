@@ -1,5 +1,5 @@
-CREATE OR REPLACE FUNCTION create_roles()
-RETURNS void AS $$
+CREATE OR REPLACE PROCEDURE create_roles()
+AS $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'administrator') THEN
         CREATE ROLE administrator;
