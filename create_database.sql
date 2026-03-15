@@ -1,6 +1,5 @@
 CREATE OR REPLACE PROCEDURE create_database()
-LANGUAGE plpgsql
-AS $$
+RETURNS VOID AS $$
 BEGIN
     CREATE TABLE IF NOT EXISTS Companies (
         contractId VARCHAR(50) PRIMARY KEY,
@@ -79,4 +78,4 @@ BEGIN
     );
 
 END;
-$$;
+$$ LANGUAGE plpgsql;
