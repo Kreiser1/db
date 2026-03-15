@@ -22,7 +22,6 @@ BEGIN
     END IF;
 
     GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO administrator;
-    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO administrator;
     GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO administrator;
     
     GRANT INSERT ON TABLE Hardware TO company;
