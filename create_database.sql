@@ -1,5 +1,5 @@
-CREATE OR REPLACE FUNCTION create_database()
-RETURNS VOID AS $$
+CREATE OR REPLACE PROCEDURE create_database()
+AS $$
 BEGIN
     CREATE TABLE IF NOT EXISTS Companies (
         contractId VARCHAR(50) PRIMARY KEY,
