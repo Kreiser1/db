@@ -1,80 +1,20 @@
 CREATE OR REPLACE PROCEDURE drop_database()
 AS $$
 BEGIN
-    DROP PROCEDURE IF EXISTS add_company(VARCHAR(50), VARCHAR(50), VARCHAR(100), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(15)) CASCADE;
-    DROP PROCEDURE IF EXISTS update_company(VARCHAR(50), VARCHAR(50), VARCHAR(100), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(15)) CASCADE;
-    DROP PROCEDURE IF EXISTS remove_company(VARCHAR(50)) CASCADE;
-    DROP PROCEDURE IF EXISTS add_contract(VARCHAR(50), BIT(1), TIMESTAMP) CASCADE;
-    DROP PROCEDURE IF EXISTS update_contract(VARCHAR(50), BIT(1), TIMESTAMP) CASCADE;
-    DROP PROCEDURE IF EXISTS remove_contract(VARCHAR(50)) CASCADE;
-    DROP PROCEDURE IF EXISTS add_hardware(VARCHAR(50), TEXT) CASCADE;
-    DROP PROCEDURE IF EXISTS update_hardware(INTEGER, VARCHAR(50), TEXT) CASCADE;
-    DROP PROCEDURE IF EXISTS remove_hardware(INTEGER) CASCADE;
-    DROP PROCEDURE IF EXISTS add_staff(VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50)) CASCADE;
-    DROP PROCEDURE IF EXISTS update_staff(VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50)) CASCADE;
-    DROP PROCEDURE IF EXISTS remove_staff(VARCHAR(50)) CASCADE;
-    DROP PROCEDURE IF EXISTS add_request(INTEGER, VARCHAR(50), VARCHAR(50), TEXT) CASCADE;
-    DROP PROCEDURE IF EXISTS update_request(INTEGER, INTEGER, VARCHAR(50), VARCHAR(50), TEXT) CASCADE;
-    DROP PROCEDURE IF EXISTS remove_request(INTEGER) CASCADE;
-    DROP PROCEDURE IF EXISTS add_task(INTEGER, TEXT, INTEGER, VARCHAR(50)) CASCADE;
-    DROP PROCEDURE IF EXISTS update_task(INTEGER, INTEGER, TEXT, INTEGER, VARCHAR(50)) CASCADE;
-    DROP PROCEDURE IF EXISTS remove_task(INTEGER) CASCADE;
-    DROP PROCEDURE IF EXISTS create_database() CASCADE;
-    DROP PROCEDURE IF EXISTS create_roles() CASCADE;
+    SET CONSTRAINTS ALL DEFERRED;
     
-    DROP INDEX IF EXISTS idx_hardware_contractId;
-    DROP INDEX IF EXISTS idx_staff_contractId;
-    DROP INDEX IF EXISTS idx_requests_contractId;
-    DROP INDEX IF EXISTS idx_requests_hardwareId;
-    DROP INDEX IF EXISTS idx_tasks_requestId;
-    DROP INDEX IF EXISTS idx_tasks_executorLogin;
+    DELETE FROM Tasks;
+    DELETE FROM Requests;
+    DELETE FROM Staff;
+    DELETE FROM Hardware;
+    DELETE FROM Contracts;
+    DELETE FROM Companies;
     
-    DROP TABLE IF EXISTS Tasks CASCADE;
-    DROP TABLE IF EXISTS Requests CASCADE;
-    DROP TABLE IF EXISTS Staff CASCADE;
-    DROP TABLE IF EXISTS Hardware CASCADE;
-    DROP TABLE IF EXISTS Contracts CASCADE;
-    DROP TABLE IF EXISTS Companies CASCADE;
+    PERFORM setval('hardware_id_seq', 1, false);
+    PERFORM setval('requests_id_seq', 1, false);
+    PERFORM setval('tasks_taskid_seq', 1, false);
     
-    DO $$
-    BEGIN
-        IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'administrator') THEN
-            REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public FROM administrator;
-            REVOKE ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public FROM administrator;
-            REVOKE ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public FROM administrator;
-            REVOKE ALL PRIVILEGES ON ALL PROCEDURES IN SCHEMA public FROM administrator;
-            REVOKE CREATE ON SCHEMA public FROM administrator;
-            DROP ROLE administrator;
-        END IF;
-        
-        IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'company') THEN
-            REVOKE USAGE ON SCHEMA public FROM company;
-            DROP ROLE company;
-        END IF;
-        
-        IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'worker') THEN
-            REVOKE USAGE ON SCHEMA public FROM worker;
-            DROP ROLE worker;
-        END IF;
-        
-        IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'executive') THEN
-            REVOKE USAGE ON SCHEMA public FROM executive;
-            DROP ROLE executive;
-        END IF;
-        
-        IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'distributor') THEN
-            REVOKE USAGE ON SCHEMA public FROM distributor;
-            DROP ROLE distributor;
-        END IF;
-    END;
-    $$;
-    
-    DROP SEQUENCE IF EXISTS hardware_id_seq CASCADE;
-    DROP SEQUENCE IF EXISTS requests_id_seq CASCADE;
-    DROP SEQUENCE IF EXISTS tasks_taskid_seq CASCADE;
-
-    DROP SCHEMA public CASCADE;
-    CREATE SCHEMA public;
+    SET CONSTRAINTS ALL IMMEDIATE;
 END;
 $$ LANGUAGE plpgsql;
 
