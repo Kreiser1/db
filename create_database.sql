@@ -6,7 +6,7 @@ BEGIN
         representativePosition VARCHAR(50) NOT NULL,
         fullName VARCHAR(100) NOT NULL,
         shortName VARCHAR(50) NOT NULL UNIQUE,
-        phyicalAddress VARCHAR(50) NOT NULL,
+        physicalAddress VARCHAR(50) NOT NULL,
         legalAddress VARCHAR(50) NOT NULL,
         contactPhone VARCHAR(15) NOT NULL,
         CONSTRAINT Companies_shortName_unique UNIQUE (shortName),
