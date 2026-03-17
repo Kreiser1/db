@@ -75,7 +75,7 @@ BEGIN
         task TEXT NOT NULL,
         requestId INTEGER NOT NULL,
         executorLogin VARCHAR(50) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        creationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         CONSTRAINT tasks_parentTaskId_FK FOREIGN KEY (parentTaskId) 
             REFERENCES Tasks(taskId) ON DELETE RESTRICT ON UPDATE CASCADE,
         CONSTRAINT tasks_requestId_FK FOREIGN KEY (requestId) 
