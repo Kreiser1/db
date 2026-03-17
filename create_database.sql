@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS Tasks (
     CONSTRAINT tasks_requestId_FK FOREIGN KEY (requestId) 
         REFERENCES Requests(id) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT tasks_executorLogin_FK FOREIGN KEY (executorLogin) 
-        REFERENCES Staff(login) ON DELETE RESTRICT ON UPDATE CASCADE,
+        REFERENCES Staff(login) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS idx_hardware_contractId ON Hardware(contractId);
