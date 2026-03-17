@@ -1,3 +1,6 @@
+CREATE OR REPLACE PROCEDURE create_database()
+AS $$
+BEGIN
     CREATE TABLE IF NOT EXISTS Companies (
         contractId VARCHAR(50) PRIMARY KEY NOT NULL,
         representativePosition VARCHAR(50) NOT NULL,
