@@ -27,27 +27,43 @@ BEGIN
     GRANT ALL PRIVILEGES ON ALL PROCEDURES IN SCHEMA public TO administrator;
     GRANT CREATE ON SCHEMA public TO administrator;
     
-    GRANT EXECUTE ON PROCEDURE add_hardware(VARCHAR(50), TEXT) TO company;
-    GRANT EXECUTE ON PROCEDURE add_request(INTEGER, VARCHAR(50), VARCHAR(50), TEXT) TO company;
-
-    GRANT EXECUTE ON PROCEDURE add_request(INTEGER, VARCHAR(50), VARCHAR(50), TEXT) TO worker;
-    
-    GRANT EXECUTE ON PROCEDURE add_task(TEXT, INTEGER, VARCHAR(50), INTEGER) TO distributor;
-    GRANT EXECUTE ON PROCEDURE reassign_tasks(VARCHAR(50), VARCHAR(50)) TO distributor;
-    GRANT EXECUTE ON FUNCTION get_department_staff(VARCHAR(50), VARCHAR(50)) TO distributor;
-
     REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public FROM company, worker, executive, distributor;
     REVOKE ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public FROM company, worker, executive, distributor;
     
     GRANT USAGE ON SCHEMA public TO company, worker, executive, distributor;
-    GRANT SELECT, INSERT, UPDATE ON TABLE Companies TO company;
-    GRANT SELECT, INSERT ON TABLE Hardware TO company;
-    GRANT SELECT, INSERT ON TABLE Requests TO company, worker;
-    GRANT SELECT, INSERT, UPDATE ON TABLE Tasks TO distributor;
-    GRANT SELECT ON TABLE Requests TO distributor, executive;
-    GRANT SELECT ON TABLE Staff TO distributor, executive;
-    GRANT SELECT ON TABLE Companies TO distributor;
-    GRANT SELECT ON TABLE Contracts TO distributor;
-    GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO company, distributor;
+    
+    GRANT EXECUTE ON PROCEDURE add_company(VARCHAR(50), VARCHAR(50), VARCHAR(100), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(15)) TO company;
+    GRANT EXECUTE ON PROCEDURE update_company(VARCHAR(50), VARCHAR(50), VARCHAR(100), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(15)) TO company;
+    GRANT EXECUTE ON PROCEDURE remove_company(VARCHAR(50)) TO company;
+    
+    GRANT EXECUTE ON PROCEDURE add_contract(VARCHAR(50), BIT(1), TIMESTAMP) TO company;
+    GRANT EXECUTE ON PROCEDURE update_contract(VARCHAR(50), BIT(1), TIMESTAMP) TO company;
+    GRANT EXECUTE ON PROCEDURE remove_contract(VARCHAR(50)) TO company;
+    
+    GRANT EXECUTE ON PROCEDURE add_hardware(VARCHAR(50), TEXT) TO company;
+    GRANT EXECUTE ON PROCEDURE update_hardware(INTEGER, VARCHAR(50), TEXT) TO company;
+    GRANT EXECUTE ON PROCEDURE remove_hardware(INTEGER) TO company;
+    
+    GRANT EXECUTE ON PROCEDURE add_staff(VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50)) TO company;
+    GRANT EXECUTE ON PROCEDURE update_staff(VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50), VARCHAR(50)) TO company;
+    GRANT EXECUTE ON PROCEDURE remove_staff(VARCHAR(50)) TO company;
+    
+    GRANT EXECUTE ON PROCEDURE add_request(INTEGER, VARCHAR(50), VARCHAR(50), TEXT) TO company;
+    GRANT EXECUTE ON PROCEDURE update_request(INTEGER, INTEGER, VARCHAR(50), VARCHAR(50), TEXT) TO company;
+    GRANT EXECUTE ON PROCEDURE remove_request(INTEGER) TO company;
+    
+    GRANT EXECUTE ON PROCEDURE add_request(INTEGER, VARCHAR(50), VARCHAR(50), TEXT) TO worker;
+    GRANT EXECUTE ON PROCEDURE update_request(INTEGER, INTEGER, VARCHAR(50), VARCHAR(50), TEXT) TO worker;
+    GRANT EXECUTE ON PROCEDURE remove_request(INTEGER) TO worker;
+    
+    GRANT EXECUTE ON PROCEDURE add_task(INTEGER, TEXT, INTEGER, VARCHAR(50)) TO distributor;
+    GRANT EXECUTE ON PROCEDURE update_task(INTEGER, INTEGER, TEXT, INTEGER, VARCHAR(50)) TO distributor;
+    GRANT EXECUTE ON PROCEDURE remove_task(INTEGER) TO distributor;
+    
+    GRANT SELECT ON TABLE Requests TO executive;
+    GRANT SELECT ON TABLE Tasks TO executive;
+    
+    GRANT SELECT ON TABLE Requests TO distributor;
+    GRANT SELECT ON TABLE Staff TO distributor;
 END;
 $$ LANGUAGE plpgsql;
