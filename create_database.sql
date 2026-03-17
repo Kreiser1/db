@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS Companies (
-    contractId VARCHAR(50) PRIMARY KEY,
+    contractId VARCHAR(50) PRIMARY KEY NOT NULL,
     representativePosition VARCHAR(50) NOT NULL,
     fullName VARCHAR(100) NOT NULL,
     shortName VARCHAR(50) NOT NULL UNIQUE,
@@ -11,13 +11,13 @@ CREATE TABLE IF NOT EXISTS Companies (
 );
 
 CREATE TABLE IF NOT EXISTS Contracts (
-    id VARCHAR(50) PRIMARY KEY,
+    id VARCHAR(50) PRIMARY KEY NOT NULL,
     status BIT(1) NOT NULL,
     expirationTime TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Hardware (
-    id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY NOT NULL,
     contractId VARCHAR(50) NOT NULL,
     description TEXT NOT NULL,
     CONSTRAINT Hardware_contractId_FK FOREIGN KEY (contractId) 
@@ -26,12 +26,12 @@ CREATE TABLE IF NOT EXISTS Hardware (
 );
 
 CREATE TABLE IF NOT EXISTS Staff (
-    login VARCHAR(50) PRIMARY KEY,
+    login VARCHAR(50) PRIMARY KEY NOT NULL,
     password VARCHAR(50) NOT NULL,
     firstName VARCHAR(50) NOT NULL,
     lastName VARCHAR(50) NOT NULL,
     patronymic VARCHAR(50),
-    contractId VARCHAR(50) NOT NULL,
+    contractId VARCHAR(50),
     department VARCHAR(50) NOT NULL,
     position VARCHAR(50) NOT NULL,
     CONSTRAINT Staff_login_check CHECK (
