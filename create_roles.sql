@@ -67,3 +67,5 @@ BEGIN
     GRANT SELECT ON TABLE Staff TO distributor;
 END;
 $$ LANGUAGE plpgsql;
+
+call create_roles();
