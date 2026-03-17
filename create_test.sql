@@ -343,6 +343,7 @@ BEGIN
         RAISE NOTICE 'Заявок: %', request_count;
         RAISE NOTICE 'Задач: %', task_count;
     END;
+    $$;
 $$ LANGUAGE plpgsql;
 
 call create_test();
