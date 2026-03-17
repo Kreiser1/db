@@ -87,3 +87,11 @@ CREATE INDEX IF NOT EXISTS idx_requests_contractId ON Requests(contractId);
 CREATE INDEX IF NOT EXISTS idx_requests_hardwareId ON Requests(hardwareId);
 CREATE INDEX IF NOT EXISTS idx_tasks_requestId ON Tasks(requestId);
 CREATE INDEX IF NOT EXISTS idx_tasks_executorLogin ON Tasks(executorLogin);
+
+DROP SEQUENCE IF EXISTS hardware_id_seq CASCADE;
+DROP SEQUENCE IF EXISTS requests_id_seq CASCADE;
+DROP SEQUENCE IF EXISTS tasks_taskid_seq CASCADE;
+
+CREATE SEQUENCE IF NOT EXISTS hardware_id_seq START WITH 1;
+CREATE SEQUENCE IF NOT EXISTS requests_id_seq START WITH 1;
+CREATE SEQUENCE IF NOT EXISTS tasks_taskid_seq START WITH 1;
