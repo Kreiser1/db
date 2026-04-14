@@ -2,21 +2,25 @@ CREATE OR REPLACE PROCEDURE create_database()
 AS $$
 BEGIN
     CREATE TABLE IF NOT EXISTS Companies (
-        contractId VARCHAR(50) PRIMARY KEY NOT NULL,
-        representativePosition VARCHAR(50) NOT NULL,
-        fullName VARCHAR(100) NOT NULL,
-        shortName VARCHAR(50) NOT NULL UNIQUE,
-        physicalAddress VARCHAR(50) NOT NULL,
-        legalAddress VARCHAR(50) NOT NULL,
-        contactPhone VARCHAR(15) NOT NULL,
-        CONSTRAINT Companies_shortName_unique UNIQUE (shortName),
-        CONSTRAINT Companies_fullName_unique UNIQUE (fullName)
+    	contractId VARCHAR(50) PRIMARY KEY NOT NULL,
+    	representativePosition VARCHAR(50) NOT NULL,
+    	fullName VARCHAR(100) NOT NULL,
+    	shortName VARCHAR(50) NOT NULL UNIQUE,
+    	physicalAddress VARCHAR(50) NOT NULL,
+    	legalAddress VARCHAR(50) NOT NULL,
+    	contactPhone VARCHAR(15) NOT NULL,
+    	companyType VARCHAR(15) NOT NULL,
+    	CONSTRAINT Companies_unique UNIQUE (shortName, fullName, companyType, contactPhone),
+    	CONSTRAINT Companies_contractId_FK FOREIGN KEY (contractId) 
+                REFERENCES Contracts(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+		CONSTRAINT Companies_contactPhone_check CHECK (contactPhone ~ '^\+7\(\d{3}\)\d{3}-\d{2}-\d{2}$')
     );
     
     CREATE TABLE IF NOT EXISTS Contracts (
-        id VARCHAR(50) PRIMARY KEY NOT NULL,
-        status BIT(1) NOT NULL,
-        expirationTime TIMESTAMP NOT NULL
+    	id VARCHAR(50) PRIMARY KEY NOT NULL UNIQUE,
+    	status VARCHAR(15) NOT NULL,
+    	expiration TIMESTAMP NOT NULL,
+    	CONSTRAINT status_check CHECK (status IN ('Открыт', 'Закрыт', 'Приостановлен'))
     );
     
     CREATE TABLE IF NOT EXISTS Hardware (
