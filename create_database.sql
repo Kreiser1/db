@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS Tasks (
 	requestId INTEGER NOT NULL,
 	executorLogin VARCHAR(50),
 	creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT tasks_parentId_FK FOREIGN KEY (parentTaskId) 
+	CONSTRAINT tasks_parentId_FK FOREIGN KEY (parentId) 
 		REFERENCES Tasks(id) ON DELETE RESTRICT ON UPDATE CASCADE,
 	CONSTRAINT tasks_requestId_FK FOREIGN KEY (requestId) 
 		REFERENCES Requests(id) ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -107,6 +107,6 @@ CREATE INDEX IF NOT EXISTS idx_requests_contractId ON Requests(contractId);
 CREATE INDEX IF NOT EXISTS idx_requests_hardwareId ON Requests(hardwareId);
 CREATE INDEX IF NOT EXISTS idx_tasks_requestId ON Tasks(requestId);
 CREATE INDEX IF NOT EXISTS idx_tasks_executorLogin ON Tasks(executorLogin);
-CREATE INDEX IF NOT EXISTS idx_tasks_parentTaskId ON Tasks(parentTaskId);
+CREATE INDEX IF NOT EXISTS idx_tasks_parentId ON Tasks(parentId);
 CREATE INDEX IF NOT EXISTS idx_requests_responsibleLogin ON Requests(responsibleLogin);
 CREATE INDEX IF NOT EXISTS idx_transport_driverLogin ON Transport(driverLogin);
