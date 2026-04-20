@@ -87,12 +87,12 @@ CREATE TABLE IF NOT EXISTS Requests (
 );
 
 CREATE TABLE IF NOT EXISTS Tasks (
-	taskId SERIAL PRIMARY KEY,
+	taskId SERIAL PRIMARY KEY NOT NULL UNIQUE,
 	parentTaskId INTEGER,
 	task TEXT NOT NULL,
 	requestId INTEGER NOT NULL,
 	executorLogin VARCHAR(50) NOT NULL,
-	creationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT tasks_parentTaskId_FK FOREIGN KEY (parentTaskId) 
 		REFERENCES Tasks(taskId) ON DELETE RESTRICT ON UPDATE CASCADE,
 	CONSTRAINT tasks_requestId_FK FOREIGN KEY (requestId) 
@@ -107,7 +107,6 @@ CREATE INDEX IF NOT EXISTS idx_requests_contractId ON Requests(contractId);
 CREATE INDEX IF NOT EXISTS idx_requests_hardwareId ON Requests(hardwareId);
 CREATE INDEX IF NOT EXISTS idx_tasks_requestId ON Tasks(requestId);
 CREATE INDEX IF NOT EXISTS idx_tasks_executorLogin ON Tasks(executorLogin);
-
-ALTER TABLE Hardware ALTER COLUMN id SET DEFAULT nextval('hardware_id_seq');
-ALTER TABLE Requests ALTER COLUMN id SET DEFAULT nextval('requests_id_seq');
-ALTER TABLE Tasks ALTER COLUMN taskId SET DEFAULT nextval('tasks_taskid_seq');
+CREATE INDEX IF NOT EXISTS idx_tasks_parentTaskId ON Tasks(parentTaskId);
+CREATE INDEX IF NOT EXISTS idx_requests_responsibleLogin ON Requests(responsibleLogin);
+CREATE INDEX IF NOT EXISTS idx_transport_driverLogin ON Transport(driverLogin);
