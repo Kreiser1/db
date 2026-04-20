@@ -1,8 +1,3 @@
-DROP SCHEMA public CASCADE;
-CREATE SCHEMA public;
-GRANT ALL ON SCHEMA public TO postgres; -- Default permissions
-GRANT ALL ON SCHEMA public TO public;
-
 CREATE TABLE IF NOT EXISTS Contracts (
 	id VARCHAR(50) PRIMARY KEY NOT NULL UNIQUE,
 	status VARCHAR(15) NOT NULL,
@@ -105,7 +100,8 @@ CREATE TABLE IF NOT EXISTS Tasks (
 		REFERENCES Requests(id) ON DELETE RESTRICT ON UPDATE CASCADE,
 	CONSTRAINT tasks_executorLogin_FK FOREIGN KEY (executorLogin) 
 		REFERENCES Staff(login) ON DELETE RESTRICT ON UPDATE CASCADE,
-	CONSTRAINT tasks_id_check CHECK (id ~ '^TSK-[0-9]{6}$')
+	CONSTRAINT tasks_id_check CHECK (id ~ '^TSK-[0-9]{6}$'),
+	CONSTRAINT tasks_parentId_check CHECK (parentId IS NULL or parentId ~ '^TSK-[0-9]{6}$')
 );
 
 CREATE INDEX IF NOT EXISTS idx_hardware_contractId ON Hardware(contractId);
