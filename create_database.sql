@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS Contracts (
 	id VARCHAR(50) PRIMARY KEY NOT NULL UNIQUE,
 	status VARCHAR(15) NOT NULL,
 	expiration TIMESTAMP NOT NULL,
-	creation TIMESTAMP NOT NULL DEFAULT now(),
+	creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT Contracts_status_check CHECK (status IN ('Открыт', 'Закрыт', 'Приостановлен')),
 	CONSTRAINT Contracts_id_check CHECK (id ~ '^ДОП/\d{2}-\d{10}$')
 );
@@ -64,28 +64,26 @@ CREATE TABLE IF NOT EXISTS Transport(
 );
 
 CREATE TABLE IF NOT EXISTS Hardware (
-	id SERIAL PRIMARY KEY NOT NULL,
-	contractId VARCHAR(50) NOT NULL,
-	description TEXT NOT NULL,
+	id SERIAL PRIMARY KEY NOT NULL UNIQUE,
+	contractId VARCHAR(50),
+	description TEXT NOT NULL UNIQUE,
 	CONSTRAINT Hardware_contractId_FK FOREIGN KEY (contractId) 
-		REFERENCES Companies(contractId) ON DELETE RESTRICT ON UPDATE CASCADE,
-	CONSTRAINT Hardware_contractId_description_unique UNIQUE (contractId, description)
+		REFERENCES Companies(contractId) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Requests (
-	id SERIAL PRIMARY KEY,
+	id SERIAL PRIMARY KEY NOT NULL UNIQUE,
 	hardwareId INTEGER NOT NULL,
-	contractId VARCHAR(50) NOT NULL,
-	responsibleLogin VARCHAR(50) NOT NULL,
+	contractId VARCHAR(50),
+	responsibleLogin VARCHAR(50),
 	text TEXT NOT NULL,
-	creationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT Requests_hardwareId_FK FOREIGN KEY (hardwareId) 
 		REFERENCES Hardware(id) ON DELETE RESTRICT ON UPDATE CASCADE,
 	CONSTRAINT Requests_contractId_FK FOREIGN KEY (contractId) 
-		REFERENCES Companies(contractId) ON DELETE RESTRICT ON UPDATE CASCADE,
-	CONSTRAINT Requests_responsibleLogin_FK FOREIGN KEY (responsibleLogin) 
-		REFERENCES Staff(login) ON DELETE RESTRICT ON UPDATE CASCADE,
-	CONSTRAINT Requests_contractId_hardwareId_unique UNIQUE (contractId, hardwareId)
+		REFERENCES Companies(contractId) ON DELETE SET NULL ON UPDATE CASCADE,
+	CONSTRAINT Requests_responsibleLogin_FK FOREIGN KEY (responsibleLogin)
+		REFERENCES Staff(login) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Tasks (
