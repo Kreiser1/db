@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS Companies (
 	companyType VARCHAR(50) NOT NULL,
 	CONSTRAINT Companies_contractId_FK FOREIGN KEY (contractId) 
 		REFERENCES Contracts(id) ON DELETE RESTRICT ON UPDATE CASCADE,
-	CONSTRAINT Companies_contactPhone_check CHECK (contactPhone ~ '^\+7\(\d{3}\)\d{3}-\d{2}-\d{2}$')
+	CONSTRAINT Companies_contactPhone_check CHECK (contactPhone IS NULL or contactPhone ~ '^\+7\(\d{3}\)\d{3}-\d{2}-\d{2}$')
 );
 
 CREATE TABLE IF NOT EXISTS Staff (
@@ -48,7 +48,19 @@ CREATE TABLE IF NOT EXISTS Staff (
 	),
 	CONSTRAINT Staff_contractId_FK FOREIGN KEY (contractId) 
 		REFERENCES Companies(contractId) ON DELETE SET NULL ON UPDATE CASCADE,
-	CONSTRAINT Staff_contactPhone_check CHECK (contactPhone ~ '^\+7\(\d{3}\)\d{3}-\d{2}-\d{2}$')
+	CONSTRAINT Staff_contactPhone_check CHECK (contactPhone IS NULL OR contactPhone ~ '^\+7\(\d{3}\)\d{3}-\d{2}-\d{2}$')
+);
+
+CREATE TABLE IF NOT EXISTS Transport(
+	id VARCHAR(15) PRIMARY KEY NOT NULL UNIQUE,
+	manufacturer VARCHAR(50) NOT NULL,
+	model VARCHAR(50) NOT NULL,
+	color VARCHAR(25) NOT NULL,
+	driverLogin VARCHAR(50) NOT NULL,
+	CONSTRAINT Transport_login_FK FOREIGN KEY (driverLogin)
+		REFERENCES Staff(login) ON DELETE RESTRICT ON UPDATE CASCADE,
+	CONSTRAINT Transport_id_check CHECK (id ~ '^[АВЕКМНОРСТУХавекмнорстух]{1}\d{3}[АВЕКМНОРСТУХавекмнорстух]{2}\s\d{2,3}$'),
+	CONSTRAINT Transport_color_check CHECK (color NOT LIKE '% %')
 );
 
 CREATE TABLE IF NOT EXISTS Hardware (
