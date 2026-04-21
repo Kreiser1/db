@@ -20,7 +20,7 @@ BEGIN
 	END IF;
 
 	IF p_expiration IS NOT NULL AND p_expiration <= CURRENT_TIMESTAMP THEN
-		RAISE EXCEPTION 'Дата истечения % не является достоверной.', p_creation;
+		RAISE EXCEPTION 'Дата истечения % не является достоверной.', p_expiration;
 	END IF;
 
     IF EXISTS (SELECT 1 FROM Contracts WHERE id = p_id) THEN
@@ -60,7 +60,7 @@ BEGIN
 	END IF;
 
 	IF p_expiration IS NOT NULL AND p_expiration <= CURRENT_TIMESTAMP THEN
-		RAISE EXCEPTION 'Дата истечения % не является достоверной.', p_creation;
+		RAISE EXCEPTION 'Дата истечения % не является достоверной.', p_expiration;
 	END IF;
 
     UPDATE Contracts
