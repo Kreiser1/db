@@ -16,11 +16,11 @@ BEGIN
     END IF;
 
 	IF p_creation IS NOT NULL AND p_creation > CURRENT_TIMESTAMP THEN
-		RAISE EXCEPTION 'Дата создания % не является достоверной.', p_creation
+		RAISE EXCEPTION 'Дата создания % не является достоверной.', p_creation;
 	END IF;
 
 	IF p_expiration IS NOT NULL AND p_expiration <= CURRENT_TIMESTAMP THEN
-		RAISE EXCEPTION 'Дата истечения % не является достоверной.', p_creation
+		RAISE EXCEPTION 'Дата истечения % не является достоверной.', p_creation;
 	END IF;
 
     IF EXISTS (SELECT 1 FROM Contracts WHERE id = p_id) THEN
@@ -56,11 +56,11 @@ BEGIN
     END IF;
 
 	IF p_creation IS NOT NULL AND p_creation > CURRENT_TIMESTAMP THEN
-		RAISE EXCEPTION 'Дата создания % не является достоверной.', p_creation
+		RAISE EXCEPTION 'Дата создания % не является достоверной.', p_creation;
 	END IF;
 
 	IF p_expiration IS NOT NULL AND p_expiration <= CURRENT_TIMESTAMP THEN
-		RAISE EXCEPTION 'Дата истечения % не является достоверной.', p_creation
+		RAISE EXCEPTION 'Дата истечения % не является достоверной.', p_creation;
 	END IF;
 
     UPDATE Contracts
@@ -241,10 +241,10 @@ CREATE OR REPLACE PROCEDURE Staff_Insert(
     p_password     VARCHAR(50),
     p_firstName    VARCHAR(50),
     p_lastName     VARCHAR(50),
+	p_department   VARCHAR(50),
+    p_position     VARCHAR(50),
     p_patronymic   VARCHAR(50) DEFAULT NULL,
     p_contractId   VARCHAR(50) DEFAULT NULL,
-    p_department   VARCHAR(50),
-    p_position     VARCHAR(50),
     p_contactPhone VARCHAR(50) DEFAULT NULL
 )
 LANGUAGE plpgsql
@@ -488,8 +488,8 @@ $$;
 
 
 CREATE OR REPLACE PROCEDURE Hardware_Insert(
-    p_contractId VARCHAR(50) DEFAULT NULL,
-    p_description TEXT
+	p_description TEXT,
+    p_contractId VARCHAR(50) DEFAULT NULL
 )
 LANGUAGE plpgsql
 AS $$
@@ -562,9 +562,9 @@ $$;
 CREATE OR REPLACE PROCEDURE Requests_Insert(
     p_id              VARCHAR(50),
     p_hardwareId      INTEGER,
+	p_text            TEXT,
     p_contractId      VARCHAR(50) DEFAULT NULL,
     p_responsibleLogin VARCHAR(50) DEFAULT NULL,
-    p_text            TEXT,
     p_creation        TIMESTAMP DEFAULT NULL
 )
 LANGUAGE plpgsql
@@ -662,9 +662,9 @@ $$;
 
 CREATE OR REPLACE PROCEDURE Tasks_Insert(
     p_id            VARCHAR(50),
-    p_parentId      VARCHAR(50) DEFAULT NULL,
-    p_task          TEXT,
+	p_task          TEXT,
     p_requestId     VARCHAR(50),
+    p_parentId      VARCHAR(50) DEFAULT NULL,
     p_executorLogin VARCHAR(50) DEFAULT NULL,
     p_creation      TIMESTAMP DEFAULT NULL
 )
