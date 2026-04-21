@@ -662,8 +662,9 @@ $$;
 
 CREATE OR REPLACE PROCEDURE Tasks_Insert(
     p_id            VARCHAR(50),
-	p_task          TEXT,
+    p_task          TEXT,
     p_requestId     VARCHAR(50),
+    p_deadline      TIMESTAMP,
     p_parentId      VARCHAR(50) DEFAULT NULL,
     p_executorLogin VARCHAR(50) DEFAULT NULL,
     p_creation      TIMESTAMP DEFAULT NULL
@@ -691,18 +692,23 @@ BEGIN
         RAISE EXCEPTION 'Сотрудник с логином "%" не найден.', p_executorLogin;
     END IF;
 
+    IF p_deadline <= CURRENT_TIMESTAMP THEN
+        RAISE EXCEPTION 'Дедлайн задачи (%) должен быть больше текущего времени.', p_deadline;
+    END IF;
+
     IF EXISTS (SELECT 1 FROM Tasks WHERE id = p_id) THEN
         RAISE EXCEPTION 'Задача с ID % уже существует.', p_id;
     END IF;
 
-    INSERT INTO Tasks (id, parentId, task, requestId, executorLogin, creation)
+    INSERT INTO Tasks (id, parentId, task, requestId, executorLogin, creation, deadline)
     VALUES (
         p_id,
         p_parentId,
         p_task,
         p_requestId,
         p_executorLogin,
-        COALESCE(p_creation, CURRENT_TIMESTAMP)
+        COALESCE(p_creation, CURRENT_TIMESTAMP),
+        p_deadline
     );
 END;
 $$;
@@ -714,7 +720,8 @@ CREATE OR REPLACE PROCEDURE Tasks_Update(
     p_task          TEXT DEFAULT NULL,
     p_requestId     VARCHAR(50) DEFAULT NULL,
     p_executorLogin VARCHAR(50) DEFAULT NULL,
-    p_creation      TIMESTAMP DEFAULT NULL
+    p_creation      TIMESTAMP DEFAULT NULL,
+    p_deadline      TIMESTAMP DEFAULT NULL
 )
 LANGUAGE plpgsql
 AS $$
@@ -745,13 +752,18 @@ BEGIN
         RAISE EXCEPTION 'Сотрудник с логином "%" не найден.', p_executorLogin;
     END IF;
 
+    IF p_deadline IS NOT NULL AND p_deadline <= CURRENT_TIMESTAMP THEN
+        RAISE EXCEPTION 'Крайний срок задачи (%) должен быть больше текущего времени.', p_deadline;
+    END IF;
+
     UPDATE Tasks
     SET
         parentId      = COALESCE(p_parentId, parentId),
         task          = COALESCE(p_task, task),
         requestId     = COALESCE(p_requestId, requestId),
         executorLogin = COALESCE(p_executorLogin, executorLogin),
-        creation      = COALESCE(p_creation, creation)
+        creation      = COALESCE(p_creation, creation),
+        deadline      = COALESCE(p_deadline, deadline)
     WHERE id = p_id;
 END;
 $$;
