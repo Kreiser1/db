@@ -1,6 +1,6 @@
 CREATE OR REPLACE PROCEDURE Contracts_Insert(
     p_id          VARCHAR(50),
-    p_status      VARCHAR(15),
+    p_status      VARCHAR(50),
     p_expiration  TIMESTAMP,
     p_creation    TIMESTAMP DEFAULT NULL
 )
@@ -40,7 +40,7 @@ $$;
 
 CREATE OR REPLACE PROCEDURE Contracts_Update(
     p_id          VARCHAR(50),
-    p_status      VARCHAR(15) DEFAULT NULL,
+    p_status      VARCHAR(50) DEFAULT NULL,
     p_expiration  TIMESTAMP   DEFAULT NULL,
     p_creation    TIMESTAMP   DEFAULT NULL
 )
@@ -99,7 +99,7 @@ CREATE OR REPLACE PROCEDURE Companies_Insert(
     p_shortName             VARCHAR(50),
     p_physicalAddress       VARCHAR(50),
     p_legalAddress          VARCHAR(50),
-    p_contactPhone          VARCHAR(15),
+    p_contactPhone          VARCHAR(50),
     p_companyType           VARCHAR(50)
 )
 LANGUAGE plpgsql
@@ -160,7 +160,7 @@ CREATE OR REPLACE PROCEDURE Companies_Update(
     p_shortName              VARCHAR(50) DEFAULT NULL,
     p_physicalAddress        VARCHAR(50) DEFAULT NULL,
     p_legalAddress           VARCHAR(50) DEFAULT NULL,
-    p_contactPhone           VARCHAR(15) DEFAULT NULL,
+    p_contactPhone           VARCHAR(50) DEFAULT NULL,
     p_companyType            VARCHAR(50) DEFAULT NULL
 )
 LANGUAGE plpgsql
@@ -408,7 +408,7 @@ $$;
 
 
 CREATE OR REPLACE PROCEDURE Transport_Insert(
-    p_id          VARCHAR(15),
+    p_id          VARCHAR(50),
     p_manufacturer VARCHAR(50),
     p_model       VARCHAR(50),
     p_color       VARCHAR(50),
@@ -440,7 +440,7 @@ $$;
 
 
 CREATE OR REPLACE PROCEDURE Transport_Update(
-    p_id           VARCHAR(15),
+    p_id           VARCHAR(50),
     p_manufacturer VARCHAR(50) DEFAULT NULL,
     p_model        VARCHAR(50) DEFAULT NULL,
     p_color        VARCHAR(50) DEFAULT NULL,
@@ -473,7 +473,7 @@ $$;
 
 
 CREATE OR REPLACE PROCEDURE Transport_Delete(
-    p_id VARCHAR(15)
+    p_id VARCHAR(50)
 )
 LANGUAGE plpgsql
 AS $$
