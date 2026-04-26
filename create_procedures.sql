@@ -7,7 +7,7 @@ CREATE OR REPLACE PROCEDURE Contracts_Insert(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    IF p_id !~ '^ДОП/\d{2}-\d{10}$' THEN
+    IF p_id !~ '^(ДОП/\d{2}-\d{10}|ДОУ-\d{9})$' THEN
         RAISE EXCEPTION 'Некорректный формат ID.';
     END IF;
 
