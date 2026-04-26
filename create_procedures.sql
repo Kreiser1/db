@@ -93,14 +93,15 @@ $$;
 
 
 CREATE OR REPLACE PROCEDURE Companies_Insert(
-    p_contractId            VARCHAR(50),
+    p_contractId             VARCHAR(50),
+    p_organisationId         VARCHAR(10),
     p_representativePosition VARCHAR(50),
-    p_fullName              VARCHAR(100),
-    p_shortName             VARCHAR(50),
-    p_physicalAddress       VARCHAR(50),
-    p_legalAddress          VARCHAR(50),
-    p_contactPhone          VARCHAR(50),
-    p_companyType           VARCHAR(50)
+    p_fullName               VARCHAR(100),
+    p_shortName              VARCHAR(50),
+    p_physicalAddress        VARCHAR(50),
+    p_legalAddress           VARCHAR(50),
+    p_contactPhone           VARCHAR(50),
+    p_companyType            VARCHAR(50)
 )
 LANGUAGE plpgsql
 AS $$
@@ -109,12 +110,20 @@ BEGIN
         RAISE EXCEPTION 'Договор с ID % не найден.', p_contractId;
     END IF;
 
+    IF p_organisationId !~ '^[0-9]{8}$|^[0-9]{10}$' THEN
+        RAISE EXCEPTION 'Некорректный формат organisationId.';
+    END IF;
+
     IF p_contactPhone IS NOT NULL AND p_contactPhone !~ '^\+7\(\d{3}\)\d{3}-\d{2}-\d{2}$' THEN
         RAISE EXCEPTION 'Некорректный формат номера телефона.';
     END IF;
 
     IF EXISTS (SELECT 1 FROM Companies WHERE contractId = p_contractId) THEN
         RAISE EXCEPTION 'Организация с ID договора % уже существует.', p_contractId;
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM Companies WHERE organisationId = p_organisationId) THEN
+        RAISE EXCEPTION 'Организация с organisationId "%" уже существует.', p_organisationId;
     END IF;
 
     IF EXISTS (SELECT 1 FROM Companies WHERE fullName = p_fullName) THEN
@@ -131,6 +140,7 @@ BEGIN
 
     INSERT INTO Companies (
         contractId,
+        organisationId,
         representativePosition,
         fullName,
         shortName,
@@ -141,6 +151,7 @@ BEGIN
     )
     VALUES (
         p_contractId,
+        p_organisationId,
         p_representativePosition,
         p_fullName,
         p_shortName,
@@ -155,13 +166,14 @@ $$;
 
 CREATE OR REPLACE PROCEDURE Companies_Update(
     p_contractId             VARCHAR(50),
-    p_representativePosition VARCHAR(50) DEFAULT NULL,
+    p_organisationId         VARCHAR(10)  DEFAULT NULL,
+    p_representativePosition VARCHAR(50)  DEFAULT NULL,
     p_fullName               VARCHAR(100) DEFAULT NULL,
-    p_shortName              VARCHAR(50) DEFAULT NULL,
-    p_physicalAddress        VARCHAR(50) DEFAULT NULL,
-    p_legalAddress           VARCHAR(50) DEFAULT NULL,
-    p_contactPhone           VARCHAR(50) DEFAULT NULL,
-    p_companyType            VARCHAR(50) DEFAULT NULL
+    p_shortName              VARCHAR(50)  DEFAULT NULL,
+    p_physicalAddress        VARCHAR(50)  DEFAULT NULL,
+    p_legalAddress           VARCHAR(50)  DEFAULT NULL,
+    p_contactPhone           VARCHAR(50)  DEFAULT NULL,
+    p_companyType            VARCHAR(50)  DEFAULT NULL
 )
 LANGUAGE plpgsql
 AS $$
@@ -170,8 +182,19 @@ BEGIN
         RAISE EXCEPTION 'Организация с ID договора % не найдена.', p_contractId;
     END IF;
 
+    IF p_organisationId IS NOT NULL AND p_organisationId !~ '^[0-9]{8}$|^[0-9]{10}$' THEN
+        RAISE EXCEPTION 'Некорректный формат organisationId.';
+    END IF;
+
     IF p_contactPhone IS NOT NULL AND p_contactPhone !~ '^\+7\(\d{3}\)\d{3}-\d{2}-\d{2}$' THEN
         RAISE EXCEPTION 'Некорректный формат номера телефона.';
+    END IF;
+
+    IF p_organisationId IS NOT NULL AND EXISTS (
+        SELECT 1 FROM Companies
+        WHERE organisationId = p_organisationId AND contractId != p_contractId
+    ) THEN
+        RAISE EXCEPTION 'Организация с organisationId "%" уже существует.', p_organisationId;
     END IF;
 
     IF p_fullName IS NOT NULL AND EXISTS (
@@ -197,6 +220,7 @@ BEGIN
 
     UPDATE Companies
     SET
+        organisationId         = COALESCE(p_organisationId, organisationId),
         representativePosition = COALESCE(p_representativePosition, representativePosition),
         fullName               = COALESCE(p_fullName, fullName),
         shortName              = COALESCE(p_shortName, shortName),
@@ -241,8 +265,7 @@ CREATE OR REPLACE PROCEDURE Staff_Insert(
     p_password     VARCHAR(50),
     p_firstName    VARCHAR(50),
     p_lastName     VARCHAR(50),
-	p_department   VARCHAR(50),
-    p_position     VARCHAR(50),
+    p_department   VARCHAR(50),
     p_patronymic   VARCHAR(50) DEFAULT NULL,
     p_contractId   VARCHAR(50) DEFAULT NULL,
     p_contactPhone VARCHAR(50) DEFAULT NULL
@@ -296,7 +319,6 @@ BEGIN
         patronymic,
         contractId,
         department,
-        position,
         contactPhone
     )
     VALUES (
@@ -307,7 +329,6 @@ BEGIN
         COALESCE(p_patronymic, 'Нет данных'),
         p_contractId,
         p_department,
-        p_position,
         p_contactPhone
     );
 END;
@@ -322,7 +343,6 @@ CREATE OR REPLACE PROCEDURE Staff_Update(
     p_patronymic   VARCHAR(50) DEFAULT NULL,
     p_contractId   VARCHAR(50) DEFAULT NULL,
     p_department   VARCHAR(50) DEFAULT NULL,
-    p_position     VARCHAR(50) DEFAULT NULL,
     p_contactPhone VARCHAR(50) DEFAULT NULL
 )
 LANGUAGE plpgsql
@@ -373,7 +393,6 @@ BEGIN
         patronymic   = COALESCE(p_patronymic, patronymic),
         contractId   = COALESCE(p_contractId, contractId),
         department   = COALESCE(p_department, department),
-        position     = COALESCE(p_position, position),
         contactPhone = COALESCE(p_contactPhone, contactPhone)
     WHERE login = p_login;
 END;
@@ -394,6 +413,10 @@ BEGIN
         RAISE EXCEPTION 'Невозможно удалить сотрудника "%": имеется связанный транспорт.', p_login;
     END IF;
 
+    IF EXISTS (SELECT 1 FROM Positions WHERE login = p_login) THEN
+        RAISE EXCEPTION 'Невозможно удалить сотрудника "%": имеются связанные должности.', p_login;
+    END IF;
+
     IF EXISTS (SELECT 1 FROM Requests WHERE responsibleLogin = p_login) THEN
         RAISE EXCEPTION 'Невозможно удалить сотрудника "%": имеются связанные заявки.', p_login;
     END IF;
@@ -403,6 +426,85 @@ BEGIN
     END IF;
 
     DELETE FROM Staff WHERE login = p_login;
+END;
+$$;
+
+
+CREATE OR REPLACE PROCEDURE Positions_Insert(
+    p_login    VARCHAR(50),
+    p_position VARCHAR(50)
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM Staff WHERE login = p_login) THEN
+        RAISE EXCEPTION 'Сотрудник с логином "%" не найден.', p_login;
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM Positions WHERE login = p_login) THEN
+        RAISE EXCEPTION 'У сотрудника "%" уже есть должность. Используйте обновление.', p_login;
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM Positions WHERE login = p_login AND position = p_position) THEN
+        RAISE EXCEPTION 'Должность "%" для сотрудника "%" уже существует.', p_position, p_login;
+    END IF;
+
+    INSERT INTO Positions (login, position)
+    VALUES (p_login, p_position);
+END;
+$$;
+
+
+CREATE OR REPLACE PROCEDURE Positions_Update(
+    p_id        INTEGER,
+    p_login     VARCHAR(50) DEFAULT NULL,
+    p_position  VARCHAR(50) DEFAULT NULL
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM Positions WHERE id = p_id) THEN
+        RAISE EXCEPTION 'Должность с ID % не найдена.', p_id;
+    END IF;
+
+    IF p_login IS NOT NULL AND NOT EXISTS (SELECT 1 FROM Staff WHERE login = p_login) THEN
+        RAISE EXCEPTION 'Сотрудник с логином "%" не найден.', p_login;
+    END IF;
+
+    IF p_login IS NOT NULL AND EXISTS (
+        SELECT 1 FROM Positions
+        WHERE login = p_login AND id != p_id
+    ) THEN
+        RAISE EXCEPTION 'У сотрудника "%" уже есть другая должность.', p_login;
+    END IF;
+
+    IF p_login IS NOT NULL AND p_position IS NOT NULL AND EXISTS (
+        SELECT 1 FROM Positions
+        WHERE login = p_login AND position = p_position AND id != p_id
+    ) THEN
+        RAISE EXCEPTION 'Должность "%" для сотрудника "%" уже существует.', p_position, p_login;
+    END IF;
+
+    UPDATE Positions
+    SET
+        login    = COALESCE(p_login, login),
+        position = COALESCE(p_position, position)
+    WHERE id = p_id;
+END;
+$$;
+
+
+CREATE OR REPLACE PROCEDURE Positions_Delete(
+    p_id INTEGER
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM Positions WHERE id = p_id) THEN
+        RAISE EXCEPTION 'Должность с ID % не найдена.', p_id;
+    END IF;
+
+    DELETE FROM Positions WHERE id = p_id;
 END;
 $$;
 
