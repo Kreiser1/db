@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS Contracts (
 	expiration TIMESTAMP NOT NULL,
 	creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT Contracts_status_check CHECK (status IN ('Открыт', 'Закрыт', 'Приостановлен')),
-	CONSTRAINT Contracts_id_check CHECK (id ~ '^ДОП/\d{2}-\d{10}$')
+	CONSTRAINT Contracts_id_check CHECK (id ~ '^(ДОП/\d{2}-\d{10}|ДОУ-\d{9})$')
 );
 
 CREATE TABLE IF NOT EXISTS Companies (
