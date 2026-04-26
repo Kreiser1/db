@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS Contracts (
 
 CREATE TABLE IF NOT EXISTS Companies (
 	contractId VARCHAR(50) PRIMARY KEY NOT NULL UNIQUE,
+	organisationId VARCHAR(10) NOT NULL UNIQUE,
 	representativePosition VARCHAR(50) NOT NULL,
 	fullName VARCHAR(100) NOT NULL UNIQUE,
 	shortName VARCHAR(50) NOT NULL UNIQUE,
@@ -18,7 +19,8 @@ CREATE TABLE IF NOT EXISTS Companies (
 	companyType VARCHAR(50) NOT NULL,
 	CONSTRAINT Companies_contractId_FK FOREIGN KEY (contractId) 
 		REFERENCES Contracts(id) ON DELETE RESTRICT ON UPDATE CASCADE,
-	CONSTRAINT Companies_contactPhone_check CHECK (contactPhone IS NULL or contactPhone ~ '^\+7\(\d{3}\)\d{3}-\d{2}-\d{2}$')
+	CONSTRAINT Companies_contactPhone_check CHECK (contactPhone IS NULL OR contactPhone ~ '^\+7\(\d{3}\)\d{3}-\d{2}-\d{2}$'),
+	CONSTRAINT Companies_organisationId_check CHECK (organisationId ~ '^[0-9]{8}$|^[0-9]{10}$')
 );
 
 CREATE TABLE IF NOT EXISTS Staff (
@@ -29,7 +31,6 @@ CREATE TABLE IF NOT EXISTS Staff (
 	patronymic VARCHAR(50) DEFAULT 'Нет данных',
 	contractId VARCHAR(50),
 	department VARCHAR(50) NOT NULL,
-	position VARCHAR(50) NOT NULL,
 	contactPhone VARCHAR(50) UNIQUE,
 	CONSTRAINT Staff_login_check CHECK (
 		LENGTH(login) >= 4 
@@ -49,6 +50,15 @@ CREATE TABLE IF NOT EXISTS Staff (
 	CONSTRAINT Staff_contractId_FK FOREIGN KEY (contractId) 
 		REFERENCES Companies(contractId) ON DELETE SET NULL ON UPDATE CASCADE,
 	CONSTRAINT Staff_contactPhone_check CHECK (contactPhone IS NULL OR contactPhone ~ '^\+7\(\d{3}\)\d{3}-\d{2}-\d{2}$')
+);
+
+CREATE TABLE IF NOT EXISTS Positions (
+	id SERIAL PRIMARY KEY NOT NULL UNIQUE,
+	login VARCHAR(50) NOT NULL UNIQUE,
+	position VARCHAR(50) NOT NULL UNIQUE,
+	CONSTRAINT Positions_unique UNIQUE (login, position),
+	CONStRAINT Positions_login_FK FOREIGN KEY (login)
+		REFERENCES Staff(login) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Transport(
