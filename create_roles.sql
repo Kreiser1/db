@@ -8,8 +8,8 @@ BEGIN
         CREATE ROLE company;
     END IF;
     
-    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'executive') THEN
-        CREATE ROLE executive;
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'executor') THEN
+        CREATE ROLE executor;
     END IF;
     
     IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'distributor') THEN
@@ -22,7 +22,7 @@ BEGIN
     GRANT ALL PRIVILEGES ON ALL PROCEDURES IN SCHEMA public TO administrator;
     GRANT CREATE ON SCHEMA public TO administrator;
     
-    GRANT USAGE ON SCHEMA public TO company, executive, distributor;
+    GRANT USAGE ON SCHEMA public TO company, executor, distributor;
     
     GRANT EXECUTE ON PROCEDURE Requests_Insert(VARCHAR, INTEGER, TEXT, VARCHAR, VARCHAR, TIMESTAMP) TO company;
     GRANT EXECUTE ON PROCEDURE Requests_FormatId(TIMESTAMP) TO company;
@@ -37,7 +37,7 @@ BEGIN
     GRANT SELECT ON TABLE Staff TO distributor;
     GRANT SELECT ON TABLE Tasks TO distributor;
     
-    GRANT SELECT ON TABLE Tasks TO executive;
-    GRANT SELECT ON TABLE Hardware TO executive;
+    GRANT SELECT ON TABLE Tasks TO executor;
+    GRANT SELECT ON TABLE Hardware TO executor;
 END;
 $$;
