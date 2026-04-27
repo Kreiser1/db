@@ -1,13 +1,15 @@
 SET CONSTRAINTS ALL DEFERRED;
-    
+
 DELETE FROM Tasks;
 DELETE FROM Requests;
-DELETE FROM Staff;
-DELETE FROM Hardware;
-DELETE FROM Contracts;
-DELETE FROM Companies;
 DELETE FROM Transport;
+DELETE FROM Positions;
+DELETE FROM Hardware;
+DELETE FROM Staff;
+DELETE FROM Companies;
+DELETE FROM Contracts;
 
-PERFORM setval('hardware_id_seq', 1, false);
+ALTER SEQUENCE hardware_id_seq RESTART WITH 1;
+ALTER SEQUENCE positions_id_seq RESTART WITH 1;
 
 SET CONSTRAINTS ALL IMMEDIATE;
