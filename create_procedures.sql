@@ -441,10 +441,6 @@ BEGIN
         RAISE EXCEPTION 'Сотрудник с логином "%" не найден.', p_login;
     END IF;
 
-    IF EXISTS (SELECT 1 FROM Positions WHERE login = p_login) THEN
-        RAISE EXCEPTION 'У сотрудника "%" уже есть должность. Используйте обновление.', p_login;
-    END IF;
-
     IF EXISTS (SELECT 1 FROM Positions WHERE login = p_login AND position = p_position) THEN
         RAISE EXCEPTION 'Должность "%" для сотрудника "%" уже существует.', p_position, p_login;
     END IF;
@@ -469,13 +465,6 @@ BEGIN
 
     IF p_login IS NOT NULL AND NOT EXISTS (SELECT 1 FROM Staff WHERE login = p_login) THEN
         RAISE EXCEPTION 'Сотрудник с логином "%" не найден.', p_login;
-    END IF;
-
-    IF p_login IS NOT NULL AND EXISTS (
-        SELECT 1 FROM Positions
-        WHERE login = p_login AND id != p_id
-    ) THEN
-        RAISE EXCEPTION 'У сотрудника "%" уже есть другая должность.', p_login;
     END IF;
 
     IF p_login IS NOT NULL AND p_position IS NOT NULL AND EXISTS (
