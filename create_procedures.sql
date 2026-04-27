@@ -111,7 +111,7 @@ BEGIN
     END IF;
 
     IF p_organisationId !~ '^[0-9]{8}$|^[0-9]{10}$' THEN
-        RAISE EXCEPTION 'Некорректный формат organisationId.';
+        RAISE EXCEPTION 'Некорректный формат ОКПО.';
     END IF;
 
     IF p_contactPhone IS NOT NULL AND p_contactPhone !~ '^\+7\(\d{3}\)\d{3}-\d{2}-\d{2}$' THEN
@@ -123,7 +123,7 @@ BEGIN
     END IF;
 
     IF EXISTS (SELECT 1 FROM Companies WHERE organisationId = p_organisationId) THEN
-        RAISE EXCEPTION 'Организация с organisationId "%" уже существует.', p_organisationId;
+        RAISE EXCEPTION 'Организация с ОКПО "%" уже существует.', p_organisationId;
     END IF;
 
     IF EXISTS (SELECT 1 FROM Companies WHERE fullName = p_fullName) THEN
@@ -183,7 +183,7 @@ BEGIN
     END IF;
 
     IF p_organisationId IS NOT NULL AND p_organisationId !~ '^[0-9]{8}$|^[0-9]{10}$' THEN
-        RAISE EXCEPTION 'Некорректный формат organisationId.';
+        RAISE EXCEPTION 'Некорректный формат ОКПО.';
     END IF;
 
     IF p_contactPhone IS NOT NULL AND p_contactPhone !~ '^\+7\(\d{3}\)\d{3}-\d{2}-\d{2}$' THEN
@@ -194,7 +194,7 @@ BEGIN
         SELECT 1 FROM Companies
         WHERE organisationId = p_organisationId AND contractId != p_contractId
     ) THEN
-        RAISE EXCEPTION 'Организация с organisationId "%" уже существует.', p_organisationId;
+        RAISE EXCEPTION 'Организация с ОКПО "%" уже существует.', p_organisationId;
     END IF;
 
     IF p_fullName IS NOT NULL AND EXISTS (
