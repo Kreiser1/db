@@ -762,6 +762,35 @@ BEGIN
 END;
 $$;
 
+
+CREATE OR REPLACE PROCEDURE Requests_FormatId(
+    p_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_year VARCHAR(2);
+    v_sequence_number INTEGER;
+    v_formatted_id VARCHAR(50);
+BEGIN
+    v_year := TO_CHAR(p_creation, 'YY');
+    
+    SELECT COALESCE(MAX(CAST(SUBSTRING(id FROM 3 FOR 8) AS INTEGER)), 0) + 1
+    INTO v_sequence_number
+    FROM Requests
+    WHERE SUBSTRING(id FROM 11 FOR 2) = v_year
+		AND id LIKE 'З-%';
+    
+    v_formatted_id := 'З-' || 
+                      LPAD(v_sequence_number::VARCHAR, 8, '0') || 
+                      '-' || 
+                      v_year;
+
+	RAISE NOTICE '%', v_formatted_id;
+END;
+$$;
+
+
 CREATE OR REPLACE PROCEDURE Tasks_Insert(
     p_id            VARCHAR(50),
     p_task          TEXT,
