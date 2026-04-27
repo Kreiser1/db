@@ -795,11 +795,21 @@ BEGIN
     END IF;
 
     IF p_deadline <= CURRENT_TIMESTAMP THEN
-        RAISE EXCEPTION 'Дедлайн задачи (%) должен быть больше текущего времени.', p_deadline;
+        RAISE EXCEPTION 'Крайний срок задачи (%) должен быть больше текущего времени.', p_deadline;
     END IF;
 
     IF EXISTS (SELECT 1 FROM Tasks WHERE id = p_id) THEN
         RAISE EXCEPTION 'Задача с ID % уже существует.', p_id;
+    END IF;
+
+	IF p_executorLogin IS NOT NULL THEN
+        IF EXISTS (
+            SELECT 1 FROM Tasks
+            WHERE executorLogin = p_executorLogin
+              AND deadline > CURRENT_TIMESTAMP
+        ) THEN
+            RAISE EXCEPTION 'Сотрудник с логином "%" уже имеет активную задачу.', p_executorLogin;
+        END IF;
     END IF;
 
     INSERT INTO Tasks (id, parentId, task, requestId, executorLogin, creation, deadline)
@@ -827,6 +837,9 @@ CREATE OR REPLACE PROCEDURE Tasks_Update(
 )
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    v_current_executorLogin VARCHAR(50);
+    v_new_deadline     TIMESTAMP;
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM Tasks WHERE id = p_id) THEN
         RAISE EXCEPTION 'Задача с ID % не найдена.', p_id;
@@ -856,6 +869,39 @@ BEGIN
 
     IF p_deadline IS NOT NULL AND p_deadline <= CURRENT_TIMESTAMP THEN
         RAISE EXCEPTION 'Крайний срок задачи (%) должен быть больше текущего времени.', p_deadline;
+    END IF;
+
+	IF p_executorLogin IS NOT NULL THEN
+        IF p_executorLogin != v_current_executorLogin THEN
+            IF EXISTS (
+                SELECT 1 FROM Tasks
+                WHERE executorLogin = p_executorLogin
+                  AND deadline > CURRENT_TIMESTAMP
+                  AND id != p_id
+            ) THEN
+                RAISE EXCEPTION 'Сотрудник с логином "%" уже имеет другую активную задачу.', p_executorLogin;
+            END IF;
+        ELSE
+            IF EXISTS (
+                SELECT 1 FROM Tasks
+                WHERE executorLogin = p_executorLogin
+                  AND deadline > CURRENT_TIMESTAMP
+                  AND id != p_id
+            ) THEN
+                RAISE EXCEPTION 'Сотрудник с логином "%" уже имеет другую активную задачу.', p_executorLogin;
+            END IF;
+        END IF;
+    ELSE
+        IF v_current_executorLogin IS NOT NULL THEN
+            IF EXISTS (
+                SELECT 1 FROM Tasks
+                WHERE executorLogin = v_current_executorLogin
+                  AND deadline > CURRENT_TIMESTAMP
+                  AND id != p_id
+            ) THEN
+                RAISE EXCEPTION 'Сотрудник с логином "%" уже имеет другую активную задачу.', v_current_executorLogin;
+            END IF;
+        END IF;
     END IF;
 
     UPDATE Tasks
